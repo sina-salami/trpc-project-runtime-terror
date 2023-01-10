@@ -5,13 +5,19 @@ import * as trpcExpress from '@trpc/server/adapters/express'
 import express from 'express'
 
 import cors from 'cors'
-import { createPost } from './posts'
+import { createPost, getPosts } from './posts'
 const t = initTRPC.create()
 
 const appRouter = t.router({
     hello: t.procedure.input(z.string().nullish()).query((req) => {
         return `hello ${req.input ?? 'world'}`
     }),
+    posts: t.procedure.query(() => {
+        return getPosts()
+    }),
+    post: t.procedure.input(z.object({ title: z.string(), text: z.string() })).mutation(req => {
+        return createPost(req.input)
+    })
 })
 
 export type AppRouter = typeof appRouter
